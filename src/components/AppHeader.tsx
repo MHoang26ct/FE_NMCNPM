@@ -32,7 +32,7 @@ function NavLink({ item }: { item: NavItem }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <span className="cursor-pointer px-6 py-4 text-base font-semibold text-foreground transition-colors tracking-wide">
+      <span className="cursor-pointer px-6 py-4 text-base font-bold text-foreground transition-colors tracking-wide">
         {item.label}
       </span>
       {/* Underline pinned to the very bottom of the header */}
@@ -85,7 +85,7 @@ export function AppHeader({
     <>
       <header className="flex items-center justify-between px-10 bg-card border-b border-border">
         <div className="flex items-center gap-10">
-          <span className="text-2xl font-bold text-primary tracking-tight py-4">
+          <span className="text-3xl font-bold text-primary tracking-tight py-4">
             CNPMBank
           </span>
           {navItems && (
@@ -105,7 +105,7 @@ export function AppHeader({
                   className="p-2 rounded-full hover:bg-accent transition-colors"
                   title={user.username}
                 >
-                  <User className="w-5 h-5 text-foreground" />
+                  <User className="w-[30px] h-[30px] text-foreground" />
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-48 p-2" align="end">
@@ -127,7 +127,7 @@ export function AppHeader({
               className="p-2 rounded-full hover:bg-accent transition-colors"
               title="Đăng nhập"
             >
-              <User className="w-5 h-5 text-foreground" />
+              <User className="w-[30px] h-[30px] text-foreground" />
             </button>
           )}
         </div>
