@@ -32,7 +32,7 @@ function NavLink({ item }: { item: NavItem }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <span className="cursor-pointer px-6 flex items-center text-base font-bold text-foreground transition-colors tracking-wide h-full">
+      <span className="cursor-pointer px-6 flex items-center text-xl font-medium text-foreground transition-colors tracking-wide h-full">
         {item.label}
       </span>
       {/* Underline pinned to the very bottom of the header */}
@@ -47,7 +47,7 @@ function NavLink({ item }: { item: NavItem }) {
               <a
                 key={sub.label}
                 href={sub.href}
-                className="block px-4 py-2.5 text-sm text-foreground hover:bg-accent transition-colors"
+                className="block px-4 py-2.5 text-lg text-foreground hover:bg-accent transition-colors"
               >
                 {sub.label}
               </a>
@@ -85,7 +85,7 @@ export function AppHeader({
     <>
       <header className="relative flex items-stretch justify-between px-10 bg-card border-b border-border">
         <div className="flex items-stretch gap-10">
-          <span className="text-3xl font-bold text-primary tracking-tight flex items-center">
+          <span className="text-4xl font-bold text-primary tracking-tight flex items-center">
             CNPMBank
           </span>
           {navItems && (
@@ -109,14 +109,14 @@ export function AppHeader({
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-48 p-2" align="end">
-                <div className="px-2 py-1.5 text-sm font-medium text-foreground border-b border-border mb-1">
+                <div className="px-2 py-1.5 text-base font-medium text-foreground border-b border-border mb-1">
                   {user.username}
                 </div>
                 <button
                   onClick={handleLogoutClick}
-                  className="flex items-center gap-2 w-full px-2 py-2 text-sm text-destructive hover:bg-accent rounded transition-colors"
+                  className="flex items-center gap-2 w-full px-2 py-2 text-base text-destructive hover:bg-accent rounded transition-colors"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-5 h-5" />
                   Đăng xuất
                 </button>
               </PopoverContent>

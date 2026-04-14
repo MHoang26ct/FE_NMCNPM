@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
 import { AppHeader } from "@/components/AppHeader";
-import { HeroPlaceholder } from "@/components/HeroPlaceholder";
+import { LandingImageHolder } from "@/components/LandingImageHolder";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -40,7 +40,7 @@ function RoleBadge({ label, variant }: { label: string; variant: "primary" | "de
       ? "bg-destructive text-destructive-foreground"
       : "bg-primary text-primary-foreground";
   return (
-    <span className={`text-xs font-semibold px-3 py-1 rounded ${cls}`}>
+    <span className={`text-base font-semibold px-4 py-1.5 rounded ${cls}`}>
       {label}
     </span>
   );
@@ -64,9 +64,9 @@ function Index() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
       <AppHeader navItems={navItems} roleBadge={roleBadge} />
-      <HeroPlaceholder />
+      <LandingImageHolder />
     </div>
   );
 }
