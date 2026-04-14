@@ -28,11 +28,11 @@ function NavLink({ item }: { item: NavItem }) {
 
   return (
     <div
-      className="relative flex flex-col"
+      className="relative flex items-center"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <span className="cursor-pointer px-6 py-4 text-base font-bold text-foreground transition-colors tracking-wide">
+      <span className="cursor-pointer px-6 flex items-center text-base font-bold text-foreground transition-colors tracking-wide h-full">
         {item.label}
       </span>
       {/* Underline pinned to the very bottom of the header */}
