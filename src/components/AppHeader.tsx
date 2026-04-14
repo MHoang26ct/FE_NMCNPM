@@ -32,7 +32,7 @@ function NavLink({ item }: { item: NavItem }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <span className="cursor-pointer px-4 py-3 text-sm font-medium text-foreground transition-colors">
+      <span className="cursor-pointer px-6 py-4 text-base font-semibold text-foreground transition-colors tracking-wide">
         {item.label}
       </span>
       {/* Underline pinned to the very bottom of the header */}
@@ -83,9 +83,9 @@ export function AppHeader({
 
   return (
     <>
-      <header className="flex items-center justify-between px-6 bg-card border-b border-border">
-        <div className="flex items-center gap-8">
-          <span className="text-lg font-bold text-primary tracking-tight py-3">
+      <header className="flex items-center justify-between px-10 bg-card border-b border-border">
+        <div className="flex items-center gap-10">
+          <span className="text-2xl font-bold text-primary tracking-tight py-4">
             CNPMBank
           </span>
           {navItems && (
