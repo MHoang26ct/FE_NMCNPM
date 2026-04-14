@@ -96,7 +96,7 @@ export function AppHeader({
             </nav>
           )}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 py-4">
           {roleBadge}
           {user ? (
             <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
