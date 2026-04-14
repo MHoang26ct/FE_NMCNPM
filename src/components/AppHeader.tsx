@@ -83,13 +83,13 @@ export function AppHeader({
 
   return (
     <>
-      <header className="flex items-center justify-between px-10 bg-card border-b border-border">
-        <div className="flex items-center gap-10">
-          <span className="text-3xl font-bold text-primary tracking-tight py-4">
+      <header className="relative flex items-stretch justify-between px-10 bg-card border-b border-border">
+        <div className="flex items-stretch gap-10">
+          <span className="text-3xl font-bold text-primary tracking-tight flex items-center">
             CNPMBank
           </span>
           {navItems && (
-            <nav className="flex items-end">
+            <nav className="flex items-stretch">
               {navItems.map((item) => (
                 <NavLink key={item.label} item={item} />
               ))}
