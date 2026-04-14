@@ -28,11 +28,11 @@ function NavLink({ item }: { item: NavItem }) {
 
   return (
     <div
-      className="relative flex flex-col"
+      className="relative flex items-center"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <span className="cursor-pointer px-6 py-4 text-base font-bold text-foreground transition-colors tracking-wide">
+      <span className="cursor-pointer px-6 flex items-center text-base font-bold text-foreground transition-colors tracking-wide h-full">
         {item.label}
       </span>
       {/* Underline pinned to the very bottom of the header */}
@@ -83,20 +83,20 @@ export function AppHeader({
 
   return (
     <>
-      <header className="flex items-center justify-between px-10 bg-card border-b border-border">
-        <div className="flex items-center gap-10">
-          <span className="text-3xl font-bold text-primary tracking-tight py-4">
+      <header className="relative flex items-stretch justify-between px-10 bg-card border-b border-border">
+        <div className="flex items-stretch gap-10">
+          <span className="text-3xl font-bold text-primary tracking-tight flex items-center">
             CNPMBank
           </span>
           {navItems && (
-            <nav className="flex items-end">
+            <nav className="flex items-stretch">
               {navItems.map((item) => (
                 <NavLink key={item.label} item={item} />
               ))}
             </nav>
           )}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 py-4">
           {roleBadge}
           {user ? (
             <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
