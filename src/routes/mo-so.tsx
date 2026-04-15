@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { SubmitSpinner } from "@/components/SubmitSpinner";
 import { useAuth } from "@/lib/auth";
 import { AppHeader } from "@/components/AppHeader";
 import { createAccount, formatCurrency, type SavingsType, SAVINGS_TYPE_LABELS } from "@/lib/savings";
@@ -51,6 +52,7 @@ function MoSoPage() {
   const [savingsType, setSavingsType] = useState<SavingsType | "">("");
   const [balance, setBalance] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   if (!user || user.role !== "nhanvien") {
     return (
@@ -72,6 +74,12 @@ function MoSoPage() {
   };
 
   const handleConfirm = () => {
+    setConfirmOpen(false);
+    setSubmitting(true);
+  };
+
+  const handleSpinnerDone = () => {
+    setSubmitting(false);
     const account = createAccount({
       customerName: customerName.trim(),
       address: address.trim(),
@@ -85,7 +93,6 @@ function MoSoPage() {
     setCmnd("");
     setSavingsType("");
     setBalance("");
-    setConfirmOpen(false);
   };
 
   const roleBadge = (
@@ -185,6 +192,8 @@ function MoSoPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <SubmitSpinner open={submitting} onDone={handleSpinnerDone} />
     </div>
   );
 }

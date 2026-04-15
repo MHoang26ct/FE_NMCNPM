@@ -10,14 +10,28 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TraCuuRouteImport } from './routes/tra-cuu'
+import { Route as ThayDoiQuyDinhRouteImport } from './routes/thay-doi-quy-dinh'
+import { Route as TaoTaiKhoanRouteImport } from './routes/tao-tai-khoan'
 import { Route as RutTienRouteImport } from './routes/rut-tien'
 import { Route as MoSoRouteImport } from './routes/mo-so'
 import { Route as GuiTienRouteImport } from './routes/gui-tien'
+import { Route as BaoCaoThangRouteImport } from './routes/bao-cao-thang'
+import { Route as BaoCaoNgayRouteImport } from './routes/bao-cao-ngay'
 import { Route as IndexRouteImport } from './routes/index'
 
 const TraCuuRoute = TraCuuRouteImport.update({
   id: '/tra-cuu',
   path: '/tra-cuu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThayDoiQuyDinhRoute = ThayDoiQuyDinhRouteImport.update({
+  id: '/thay-doi-quy-dinh',
+  path: '/thay-doi-quy-dinh',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TaoTaiKhoanRoute = TaoTaiKhoanRouteImport.update({
+  id: '/tao-tai-khoan',
+  path: '/tao-tai-khoan',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RutTienRoute = RutTienRouteImport.update({
@@ -35,6 +49,16 @@ const GuiTienRoute = GuiTienRouteImport.update({
   path: '/gui-tien',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BaoCaoThangRoute = BaoCaoThangRouteImport.update({
+  id: '/bao-cao-thang',
+  path: '/bao-cao-thang',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BaoCaoNgayRoute = BaoCaoNgayRouteImport.update({
+  id: '/bao-cao-ngay',
+  path: '/bao-cao-ngay',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,39 +67,83 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/bao-cao-ngay': typeof BaoCaoNgayRoute
+  '/bao-cao-thang': typeof BaoCaoThangRoute
   '/gui-tien': typeof GuiTienRoute
   '/mo-so': typeof MoSoRoute
   '/rut-tien': typeof RutTienRoute
+  '/tao-tai-khoan': typeof TaoTaiKhoanRoute
+  '/thay-doi-quy-dinh': typeof ThayDoiQuyDinhRoute
   '/tra-cuu': typeof TraCuuRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/bao-cao-ngay': typeof BaoCaoNgayRoute
+  '/bao-cao-thang': typeof BaoCaoThangRoute
   '/gui-tien': typeof GuiTienRoute
   '/mo-so': typeof MoSoRoute
   '/rut-tien': typeof RutTienRoute
+  '/tao-tai-khoan': typeof TaoTaiKhoanRoute
+  '/thay-doi-quy-dinh': typeof ThayDoiQuyDinhRoute
   '/tra-cuu': typeof TraCuuRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/bao-cao-ngay': typeof BaoCaoNgayRoute
+  '/bao-cao-thang': typeof BaoCaoThangRoute
   '/gui-tien': typeof GuiTienRoute
   '/mo-so': typeof MoSoRoute
   '/rut-tien': typeof RutTienRoute
+  '/tao-tai-khoan': typeof TaoTaiKhoanRoute
+  '/thay-doi-quy-dinh': typeof ThayDoiQuyDinhRoute
   '/tra-cuu': typeof TraCuuRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/gui-tien' | '/mo-so' | '/rut-tien' | '/tra-cuu'
+  fullPaths:
+    | '/'
+    | '/bao-cao-ngay'
+    | '/bao-cao-thang'
+    | '/gui-tien'
+    | '/mo-so'
+    | '/rut-tien'
+    | '/tao-tai-khoan'
+    | '/thay-doi-quy-dinh'
+    | '/tra-cuu'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/gui-tien' | '/mo-so' | '/rut-tien' | '/tra-cuu'
-  id: '__root__' | '/' | '/gui-tien' | '/mo-so' | '/rut-tien' | '/tra-cuu'
+  to:
+    | '/'
+    | '/bao-cao-ngay'
+    | '/bao-cao-thang'
+    | '/gui-tien'
+    | '/mo-so'
+    | '/rut-tien'
+    | '/tao-tai-khoan'
+    | '/thay-doi-quy-dinh'
+    | '/tra-cuu'
+  id:
+    | '__root__'
+    | '/'
+    | '/bao-cao-ngay'
+    | '/bao-cao-thang'
+    | '/gui-tien'
+    | '/mo-so'
+    | '/rut-tien'
+    | '/tao-tai-khoan'
+    | '/thay-doi-quy-dinh'
+    | '/tra-cuu'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BaoCaoNgayRoute: typeof BaoCaoNgayRoute
+  BaoCaoThangRoute: typeof BaoCaoThangRoute
   GuiTienRoute: typeof GuiTienRoute
   MoSoRoute: typeof MoSoRoute
   RutTienRoute: typeof RutTienRoute
+  TaoTaiKhoanRoute: typeof TaoTaiKhoanRoute
+  ThayDoiQuyDinhRoute: typeof ThayDoiQuyDinhRoute
   TraCuuRoute: typeof TraCuuRoute
 }
 
@@ -86,6 +154,20 @@ declare module '@tanstack/react-router' {
       path: '/tra-cuu'
       fullPath: '/tra-cuu'
       preLoaderRoute: typeof TraCuuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/thay-doi-quy-dinh': {
+      id: '/thay-doi-quy-dinh'
+      path: '/thay-doi-quy-dinh'
+      fullPath: '/thay-doi-quy-dinh'
+      preLoaderRoute: typeof ThayDoiQuyDinhRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tao-tai-khoan': {
+      id: '/tao-tai-khoan'
+      path: '/tao-tai-khoan'
+      fullPath: '/tao-tai-khoan'
+      preLoaderRoute: typeof TaoTaiKhoanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rut-tien': {
@@ -109,6 +191,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuiTienRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bao-cao-thang': {
+      id: '/bao-cao-thang'
+      path: '/bao-cao-thang'
+      fullPath: '/bao-cao-thang'
+      preLoaderRoute: typeof BaoCaoThangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bao-cao-ngay': {
+      id: '/bao-cao-ngay'
+      path: '/bao-cao-ngay'
+      fullPath: '/bao-cao-ngay'
+      preLoaderRoute: typeof BaoCaoNgayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -121,9 +217,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BaoCaoNgayRoute: BaoCaoNgayRoute,
+  BaoCaoThangRoute: BaoCaoThangRoute,
   GuiTienRoute: GuiTienRoute,
   MoSoRoute: MoSoRoute,
   RutTienRoute: RutTienRoute,
+  TaoTaiKhoanRoute: TaoTaiKhoanRoute,
+  ThayDoiQuyDinhRoute: ThayDoiQuyDinhRoute,
   TraCuuRoute: TraCuuRoute,
 }
 export const routeTree = rootRouteImport

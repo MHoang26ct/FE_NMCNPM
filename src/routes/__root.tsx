@@ -1,5 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/components/AuthProvider";
+import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -57,6 +58,7 @@ function RootComponent() {
   return (
     <AuthProvider>
       <Outlet />
+      <Toaster richColors position="bottom-right" />
     </AuthProvider>
   );
 }

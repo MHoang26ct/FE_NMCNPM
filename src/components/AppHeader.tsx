@@ -93,9 +93,12 @@ export function AppHeader({
     <>
       <header className="relative flex items-stretch justify-between px-10 bg-card border-b border-border">
         <div className="flex items-stretch gap-10">
-          <span className="text-4xl font-bold text-primary tracking-tight flex items-center">
+          <Link
+            to="/"
+            className="text-4xl font-bold text-primary tracking-tight flex items-center no-underline hover:opacity-80 transition-opacity"
+          >
             CNPMBank
-          </span>
+          </Link>
           {navItems && (
             <nav className="flex items-stretch">
               {navItems.map((item) => (

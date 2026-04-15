@@ -23,21 +23,23 @@ const NAV_GIAMDOC = [
   {
     label: "LẬP BÁO CÁO",
     dropdown: [
-      { label: "Báo cáo đóng/mở sổ tháng", href: "#" },
-      { label: "Báo cáo doanh số", href: "#" },
+      { label: "Báo cáo đóng/mở sổ tháng", href: "/bao-cao-thang" },
+      { label: "Báo cáo doanh số hoạt động ngày", href: "/bao-cao-ngay" },
     ],
   },
-  { label: "THAY ĐỔI QUY ĐỊNH" },
+  { label: "THAY ĐỔI QUY ĐỊNH", href: "/thay-doi-quy-dinh" },
 ];
 
 const NAV_ADMIN = [
-  { label: "TẠO TÀI KHOẢN" },
+  { label: "TẠO TÀI KHOẢN", href: "/tao-tai-khoan" },
 ];
 
-function RoleBadge({ label, variant }: { label: string; variant: "primary" | "destructive" }) {
+function RoleBadge({ label, variant }: { label: string; variant: "primary" | "destructive" | "dark" }) {
   const cls =
     variant === "destructive"
-      ? "bg-destructive text-destructive-foreground"
+      ? "bg-red-600 text-white"
+      : variant === "dark"
+      ? "bg-neutral-900 text-amber-300 ring-1 ring-neutral-700"
       : "bg-primary text-primary-foreground";
   return (
     <span className={`text-base font-semibold px-4 py-1.5 rounded ${cls}`}>
@@ -57,7 +59,7 @@ function Index() {
     roleBadge = <RoleBadge label="NHÂN VIÊN" variant="primary" />;
   } else if (user?.role === "giamdoc") {
     navItems = NAV_GIAMDOC;
-    roleBadge = <RoleBadge label="GIÁM ĐỐC" variant="primary" />;
+    roleBadge = <RoleBadge label="GIÁM ĐỐC" variant="dark" />;
   } else if (user?.role === "admin") {
     navItems = NAV_ADMIN;
     roleBadge = <RoleBadge label="ADMIN" variant="destructive" />;

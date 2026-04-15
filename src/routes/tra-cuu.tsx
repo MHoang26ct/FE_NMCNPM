@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { SubmitSpinner } from "@/components/SubmitSpinner";
 import { useAuth } from "@/lib/auth";
 import { AppHeader } from "@/components/AppHeader";
 import { searchAccounts, formatCurrency, SAVINGS_TYPE_LABELS, type SavingsAccount } from "@/lib/savings";
@@ -38,6 +39,7 @@ function TraCuuPage() {
   const [customerName, setCustomerName] = useState("");
   const [cmnd, setCmnd] = useState("");
   const [results, setResults] = useState<SavingsAccount[] | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   if (!user || user.role !== "nhanvien") {
     return (
@@ -54,6 +56,13 @@ function TraCuuPage() {
     const name = customerName.trim();
     const id = cmnd.trim();
     if (!name && !id) return;
+    setSubmitting(true);
+  };
+
+  const handleSpinnerDone = () => {
+    const name = customerName.trim();
+    const id = cmnd.trim();
+    setSubmitting(false);
     const found = searchAccounts({
       customerName: name || undefined,
       cmnd: id || undefined,
@@ -142,6 +151,8 @@ function TraCuuPage() {
           )}
         </div>
       </div>
+
+      <SubmitSpinner open={submitting} onDone={handleSpinnerDone} />
     </div>
   );
 }

@@ -1,12 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { SubmitSpinner } from "@/components/SubmitSpinner";
 import { useAuth } from "@/lib/auth";
 import { AppHeader } from "@/components/AppHeader";
-import { findAccountById, findAccountByCmnd, withdraw, formatCurrency, SAVINGS_TYPE_LABELS, type SavingsAccount } from "@/lib/savings";
+import {
+  findAccountById,
+  findAccountByCmnd,
+  withdraw,
+  formatCurrency,
+  SAVINGS_TYPE_LABELS,
+  type SavingsAccount,
+} from "@/lib/savings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Search } from "lucide-react";
+import { Search, CheckCircle2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,10 +47,12 @@ function RutTienPage() {
   const { user } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [foundAccount, setFoundAccount] = useState<SavingsAccount | null>(null);
+  const [searchResults, setSearchResults] = useState<SavingsAccount[]>([]);
+  const [selectedAccount, setSelectedAccount] = useState<SavingsAccount | null>(null);
   const [searchError, setSearchError] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   if (!user || user.role !== "nhanvien") {
     return (
@@ -55,32 +65,36 @@ function RutTienPage() {
     );
   }
 
-  const isFixedTerm = foundAccount && foundAccount.savingsType !== "khongkyhan";
-  const actualWithdrawAmount = isFixedTerm ? foundAccount!.balance : Number(withdrawAmount);
-  const isWithdrawValid = foundAccount && actualWithdrawAmount > 0 && actualWithdrawAmount <= foundAccount.balance;
+  const isFixedTerm = selectedAccount && selectedAccount.savingsType !== "khongkyhan";
+  const actualWithdrawAmount = isFixedTerm ? selectedAccount!.balance : Number(withdrawAmount);
+  const isWithdrawValid =
+    selectedAccount &&
+    actualWithdrawAmount > 0 &&
+    actualWithdrawAmount <= selectedAccount.balance;
 
   const handleSearch = () => {
     const q = searchQuery.trim();
     if (!q) return;
     setSearchError("");
-    setFoundAccount(null);
+    setSearchResults([]);
+    setSelectedAccount(null);
     setWithdrawAmount("");
 
     const byId = findAccountById(q.toUpperCase());
     if (byId) {
-      setFoundAccount(byId);
-      if (byId.savingsType !== "khongkyhan") {
-        setWithdrawAmount(String(byId.balance));
-      }
+      setSelectedAccount(byId);
+      if (byId.savingsType !== "khongkyhan") setWithdrawAmount(String(byId.balance));
       return;
     }
 
     const byCmnd = findAccountByCmnd(q);
-    if (byCmnd.length >= 1) {
-      setFoundAccount(byCmnd[0]);
-      if (byCmnd[0].savingsType !== "khongkyhan") {
-        setWithdrawAmount(String(byCmnd[0].balance));
-      }
+    if (byCmnd.length === 1) {
+      setSelectedAccount(byCmnd[0]);
+      if (byCmnd[0].savingsType !== "khongkyhan") setWithdrawAmount(String(byCmnd[0].balance));
+      return;
+    }
+    if (byCmnd.length > 1) {
+      setSearchResults(byCmnd);
       return;
     }
 
@@ -91,27 +105,39 @@ function RutTienPage() {
     if (e.key === "Enter") handleSearch();
   };
 
+  const handleSelectAccount = (account: SavingsAccount) => {
+    setSelectedAccount(account);
+    setSearchResults([]);
+    setWithdrawAmount(account.savingsType !== "khongkyhan" ? String(account.balance) : "");
+  };
+
   const handleWithdraw = () => {
     if (!isWithdrawValid) return;
     setConfirmOpen(true);
   };
 
   const handleConfirm = () => {
-    if (!foundAccount) return;
-    const updated = withdraw(foundAccount.id, actualWithdrawAmount);
+    setConfirmOpen(false);
+    setSubmitting(true);
+  };
+
+  const handleSpinnerDone = () => {
+    if (!selectedAccount) return;
+    setSubmitting(false);
+    const updated = withdraw(selectedAccount.id, actualWithdrawAmount);
     if (updated) {
       toast.success(`Rút tiền thành công! Số dư còn lại: ${formatCurrency(updated.balance)}`);
-      setFoundAccount(updated);
-      setWithdrawAmount("");
       if (isFixedTerm) {
-        // After full withdrawal of fixed-term, reset search
-        setFoundAccount(null);
+        setSelectedAccount(null);
         setSearchQuery("");
+        setSearchResults([]);
+      } else {
+        setSelectedAccount(updated);
+        setWithdrawAmount("");
       }
     } else {
       toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
     }
-    setConfirmOpen(false);
   };
 
   const roleBadge = (
@@ -128,7 +154,7 @@ function RutTienPage() {
           <h1 className="text-2xl font-bold text-foreground mb-8">Lập phiếu rút tiền</h1>
 
           {/* Search */}
-          <div className="space-y-2 mb-6">
+          <div className="space-y-2 mb-4">
             <Label>Tìm sổ tiết kiệm (Mã sổ / CMND)</Label>
             <div className="flex gap-2">
               <Input
@@ -147,20 +173,52 @@ function RutTienPage() {
             {searchError && <p className="text-sm text-destructive">{searchError}</p>}
           </div>
 
-          {/* Account info */}
-          {foundAccount && (
-            <div className="space-y-6">
-              <div className="rounded-lg border border-border bg-card p-5 space-y-3">
-                <h2 className="text-lg font-semibold text-foreground mb-2">Thông tin sổ tiết kiệm</h2>
-                <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
-                  <span className="text-muted-foreground">Mã sổ:</span>
-                  <span className="font-medium text-foreground">{foundAccount.id}</span>
-                  <span className="text-muted-foreground">Loại tiết kiệm:</span>
-                  <span className="font-medium text-foreground">{SAVINGS_TYPE_LABELS[foundAccount.savingsType]}</span>
-                  <span className="text-muted-foreground">Khách hàng:</span>
-                  <span className="font-medium text-foreground">{foundAccount.customerName}</span>
-                  <span className="text-muted-foreground">Số dư hiện tại:</span>
-                  <span className="font-medium text-foreground">{formatCurrency(foundAccount.balance)}</span>
+          {/* Multiple results list */}
+          {searchResults.length > 1 && (
+            <div className="mb-6 rounded-lg border border-border overflow-hidden">
+              <div className="bg-muted/50 px-4 py-2 text-sm font-medium text-muted-foreground">
+                Tìm thấy {searchResults.length} sổ — chọn một sổ để tiếp tục
+              </div>
+              <div className="divide-y divide-border">
+                {searchResults.map((acc) => (
+                  <button
+                    key={acc.id}
+                    onClick={() => handleSelectAccount(acc)}
+                    className="w-full flex items-center justify-between px-4 py-3 hover:bg-accent transition-colors text-left"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div>
+                        <p className="font-mono text-sm font-semibold text-foreground">{acc.id}</p>
+                        <p className="text-xs text-muted-foreground">{SAVINGS_TYPE_LABELS[acc.savingsType]}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-foreground">{acc.customerName}</p>
+                        <p className="text-xs text-muted-foreground">Số dư: {formatCurrency(acc.balance)}</p>
+                      </div>
+                    </div>
+                    <CheckCircle2 className="w-4 h-4 text-muted-foreground/40 shrink-0" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Selected account — compact card */}
+          {selectedAccount && (
+            <div className="space-y-5">
+              <div className="rounded-lg border border-border bg-card p-4">
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <div>
+                    <p className="font-mono text-base font-bold text-foreground">{selectedAccount.id}</p>
+                    <p className="text-sm text-muted-foreground">{selectedAccount.customerName} · {selectedAccount.cmnd}</p>
+                  </div>
+                  <span className="shrink-0 text-xs font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">
+                    {SAVINGS_TYPE_LABELS[selectedAccount.savingsType]}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm border-t border-border pt-3">
+                  <span className="text-muted-foreground">Số dư hiện tại</span>
+                  <span className="font-semibold text-foreground text-base">{formatCurrency(selectedAccount.balance)}</span>
                 </div>
               </div>
 
@@ -171,7 +229,7 @@ function RutTienPage() {
                     <Input
                       id="withdrawAmount"
                       type="text"
-                      value={formatCurrency(foundAccount.balance)}
+                      value={formatCurrency(selectedAccount.balance)}
                       disabled
                       className="bg-muted"
                     />
@@ -184,7 +242,7 @@ function RutTienPage() {
                     id="withdrawAmount"
                     type="number"
                     min="1"
-                    max={foundAccount.balance}
+                    max={selectedAccount.balance}
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
                     placeholder="Nhập số tiền muốn rút"
@@ -207,9 +265,9 @@ function RutTienPage() {
             <AlertDialogTitle>Xác nhận rút tiền</AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-1 text-sm text-muted-foreground">
-                <p><strong>Mã sổ:</strong> {foundAccount?.id}</p>
-                <p><strong>Khách hàng:</strong> {foundAccount?.customerName}</p>
-                <p><strong>Loại tiết kiệm:</strong> {foundAccount ? SAVINGS_TYPE_LABELS[foundAccount.savingsType] : ""}</p>
+                <p><strong>Mã sổ:</strong> {selectedAccount?.id}</p>
+                <p><strong>Khách hàng:</strong> {selectedAccount?.customerName}</p>
+                <p><strong>Loại tiết kiệm:</strong> {selectedAccount ? SAVINGS_TYPE_LABELS[selectedAccount.savingsType] : ""}</p>
                 <p><strong>Số tiền rút:</strong> {formatCurrency(actualWithdrawAmount || 0)}</p>
                 {isFixedTerm && (
                   <p className="text-destructive font-medium mt-1">⚠ Rút toàn bộ số dư (kỳ hạn)</p>
@@ -223,6 +281,8 @@ function RutTienPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <SubmitSpinner open={submitting} onDone={handleSpinnerDone} />
     </div>
   );
 }
