@@ -8,15 +8,15 @@ export const Route = createFileRoute("/")({
 });
 
 const NAV_NHANVIEN = [
-  { label: "MỞ SỔ" },
+  { label: "MỞ SỔ", href: "/mo-so" },
   {
     label: "LẬP PHIẾU",
     dropdown: [
-      { label: "Phiếu gửi tiền", href: "#" },
-      { label: "Phiếu rút tiền", href: "#" },
+      { label: "Phiếu gửi tiền", href: "/gui-tien" },
+      { label: "Phiếu rút tiền", href: "/rut-tien" },
     ],
   },
-  { label: "TRA CỨU" },
+  { label: "TRA CỨU", href: "/tra-cuu" },
 ];
 
 const NAV_GIAMDOC = [
