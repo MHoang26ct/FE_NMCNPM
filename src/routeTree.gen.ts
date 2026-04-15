@@ -9,12 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TraCuuRouteImport } from './routes/tra-cuu'
+import { Route as RutTienRouteImport } from './routes/rut-tien'
 import { Route as MoSoRouteImport } from './routes/mo-so'
+import { Route as GuiTienRouteImport } from './routes/gui-tien'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TraCuuRoute = TraCuuRouteImport.update({
+  id: '/tra-cuu',
+  path: '/tra-cuu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RutTienRoute = RutTienRouteImport.update({
+  id: '/rut-tien',
+  path: '/rut-tien',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MoSoRoute = MoSoRouteImport.update({
   id: '/mo-so',
   path: '/mo-so',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuiTienRoute = GuiTienRouteImport.update({
+  id: '/gui-tien',
+  path: '/gui-tien',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,37 +43,70 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/gui-tien': typeof GuiTienRoute
   '/mo-so': typeof MoSoRoute
+  '/rut-tien': typeof RutTienRoute
+  '/tra-cuu': typeof TraCuuRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/gui-tien': typeof GuiTienRoute
   '/mo-so': typeof MoSoRoute
+  '/rut-tien': typeof RutTienRoute
+  '/tra-cuu': typeof TraCuuRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/gui-tien': typeof GuiTienRoute
   '/mo-so': typeof MoSoRoute
+  '/rut-tien': typeof RutTienRoute
+  '/tra-cuu': typeof TraCuuRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/mo-so'
+  fullPaths: '/' | '/gui-tien' | '/mo-so' | '/rut-tien' | '/tra-cuu'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/mo-so'
-  id: '__root__' | '/' | '/mo-so'
+  to: '/' | '/gui-tien' | '/mo-so' | '/rut-tien' | '/tra-cuu'
+  id: '__root__' | '/' | '/gui-tien' | '/mo-so' | '/rut-tien' | '/tra-cuu'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GuiTienRoute: typeof GuiTienRoute
   MoSoRoute: typeof MoSoRoute
+  RutTienRoute: typeof RutTienRoute
+  TraCuuRoute: typeof TraCuuRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tra-cuu': {
+      id: '/tra-cuu'
+      path: '/tra-cuu'
+      fullPath: '/tra-cuu'
+      preLoaderRoute: typeof TraCuuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rut-tien': {
+      id: '/rut-tien'
+      path: '/rut-tien'
+      fullPath: '/rut-tien'
+      preLoaderRoute: typeof RutTienRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mo-so': {
       id: '/mo-so'
       path: '/mo-so'
       fullPath: '/mo-so'
       preLoaderRoute: typeof MoSoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gui-tien': {
+      id: '/gui-tien'
+      path: '/gui-tien'
+      fullPath: '/gui-tien'
+      preLoaderRoute: typeof GuiTienRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -70,7 +121,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GuiTienRoute: GuiTienRoute,
   MoSoRoute: MoSoRoute,
+  RutTienRoute: RutTienRoute,
+  TraCuuRoute: TraCuuRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

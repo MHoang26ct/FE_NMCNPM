@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect, type ReactNode } from "react";
-import { User, LogOut, Eye, EyeOff } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
+import { User, LogOut } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { LoginDialog } from "@/components/LoginDialog";
 import {
@@ -18,8 +19,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-interface NavItem {
+export interface NavItem {
   label: string;
+  href?: string;
   dropdown?: { label: string; href: string }[];
 }
 
@@ -32,9 +34,15 @@ function NavLink({ item }: { item: NavItem }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <span className="cursor-pointer px-6 flex items-center text-xl font-medium text-foreground transition-colors tracking-wide h-full">
-        {item.label}
-      </span>
+      {item.href ? (
+        <Link to={item.href} className="cursor-pointer px-6 flex items-center text-xl font-medium text-foreground transition-colors tracking-wide h-full no-underline">
+          {item.label}
+        </Link>
+      ) : (
+        <span className="cursor-pointer px-6 flex items-center text-xl font-medium text-foreground transition-colors tracking-wide h-full">
+          {item.label}
+        </span>
+      )}
       {/* Underline pinned to the very bottom of the header */}
       <div
         className={`absolute bottom-0 left-0 right-0 h-[3px] bg-primary transition-opacity ${hovered ? "opacity-100" : "opacity-0"}`}
@@ -44,13 +52,13 @@ function NavLink({ item }: { item: NavItem }) {
         <div className="absolute top-full left-0 pt-[3px] z-50">
           <div className="bg-card shadow-lg rounded border border-border min-w-[200px]">
             {item.dropdown.map((sub) => (
-              <a
+              <Link
                 key={sub.label}
-                href={sub.href}
-                className="block px-4 py-2.5 text-lg text-foreground hover:bg-accent transition-colors"
+                to={sub.href}
+                className="block px-4 py-2.5 text-lg text-foreground hover:bg-accent transition-colors no-underline"
               >
                 {sub.label}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
