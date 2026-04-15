@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { User, LogOut } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { LoginDialog } from "@/components/LoginDialog";
@@ -75,6 +75,7 @@ export function AppHeader({
   roleBadge?: ReactNode;
 }) {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [loginOpen, setLoginOpen] = useState(false);
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -87,6 +88,7 @@ export function AppHeader({
   const handleConfirmLogout = () => {
     logout();
     setLogoutConfirmOpen(false);
+    navigate({ to: "/" });
   };
 
   return (

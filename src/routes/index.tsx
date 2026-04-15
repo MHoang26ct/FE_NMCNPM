@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
 
+import { LandingImageHolder } from "@/components/LandingImageHolder";
+
 export const Route = createFileRoute("/")({
   component: Index,
 });
@@ -87,15 +89,7 @@ function Index() {
       <AppHeader navItems={navItems} roleBadge={roleBadge} />
       
       {user ? (
-        <div className="flex-1 flex flex-col items-center justify-center p-8 pointer-events-none">
-          <div className="text-center space-y-4 max-w-xl">
-             <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
-                <span className="text-5xl">👋</span>
-             </div>
-             <h1 className="text-4xl font-bold text-foreground tracking-tight">Xin chào, {user.username}!</h1>
-             <p className="text-xl text-muted-foreground leading-relaxed">Chào mừng bạn đã quay lại.<br/>Vui lòng chọn chức năng trên thanh Menu để tiếp tục làm việc.</p>
-          </div>
-        </div>
+        <LandingImageHolder />
       ) : (
         <div className="flex-1 flex items-center justify-center p-4">
           <div className="w-full max-w-[400px] bg-card border border-border shadow-lg rounded-xl overflow-hidden mt-[-10vh]">
