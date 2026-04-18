@@ -70,9 +70,11 @@ function NavLink({ item }: { item: NavItem }) {
 export function AppHeader({
   navItems,
   roleBadge,
+  hideLoginButton,
 }: {
   navItems?: NavItem[];
   roleBadge?: ReactNode;
+  hideLoginButton?: boolean;
 }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -134,7 +136,7 @@ export function AppHeader({
                 </button>
               </PopoverContent>
             </Popover>
-          ) : (
+          ) : !hideLoginButton ? (
             <button
               onClick={() => setLoginOpen(true)}
               className="p-2 rounded-full hover:bg-accent transition-colors"
@@ -142,7 +144,7 @@ export function AppHeader({
             >
               <User className="w-[30px] h-[30px] text-foreground" />
             </button>
-          )}
+          ) : null}
         </div>
       </header>
 

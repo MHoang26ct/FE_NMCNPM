@@ -86,7 +86,7 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <AppHeader navItems={navItems} roleBadge={roleBadge} />
+      <AppHeader navItems={navItems} roleBadge={roleBadge} hideLoginButton={!user} />
       
       {user ? (
         <LandingImageHolder />
