@@ -3,7 +3,12 @@ import { useState } from "react";
 import { SubmitSpinner } from "@/components/SubmitSpinner";
 import { useAuth } from "@/lib/auth";
 import { AppHeader } from "@/components/AppHeader";
-import { searchAccounts, formatCurrency, SAVINGS_TYPE_LABELS, type SavingsAccount } from "@/lib/savings";
+import {
+  searchAccounts,
+  formatCurrency,
+  formatRegulationName,
+  type SavingsAccount,
+} from "@/lib/savings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,12 +21,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/tra-cuu")({
   component: TraCuuPage,
 });
 
 const NAV_NHANVIEN = [
+  {
+    label: "LẬP BÁO CÁO",
+    dropdown: [
+      { label: "Báo cáo đóng/mở sổ tháng", href: "/bao-cao-thang" },
+      { label: "Báo cáo doanh số hoạt động ngày", href: "/bao-cao-ngay" },
+    ],
+  },
   { label: "MỞ SỔ", href: "/mo-so" },
   {
     label: "LẬP PHIẾU",
@@ -59,15 +72,23 @@ function TraCuuPage() {
     setSubmitting(true);
   };
 
-  const handleSpinnerDone = () => {
+  const handleSpinnerDone = async () => {
     const name = customerName.trim();
     const id = cmnd.trim();
-    setSubmitting(false);
-    const found = searchAccounts({
-      customerName: name || undefined,
-      cmnd: id || undefined,
-    });
-    setResults(found);
+
+    try {
+      const found = await searchAccounts({
+        customerName: name || undefined,
+        cmnd: id || undefined,
+      });
+      setResults(found);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Không thể tra cứu dữ liệu.";
+      toast.error(message);
+      setResults([]);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -87,7 +108,6 @@ function TraCuuPage() {
         <div className="w-full max-w-3xl">
           <h1 className="text-2xl font-bold text-foreground mb-8">Tra cứu sổ tiết kiệm</h1>
 
-          {/* Search filters */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div className="space-y-2">
               <Label htmlFor="searchName">Tên khách hàng</Label>
@@ -98,7 +118,6 @@ function TraCuuPage() {
                 onKeyDown={handleKeyDown}
                 placeholder="Nhập tên khách hàng"
                 autoComplete="off"
-                list=""
               />
             </div>
             <div className="space-y-2">
@@ -110,7 +129,6 @@ function TraCuuPage() {
                 onKeyDown={handleKeyDown}
                 placeholder="Nhập số CMND"
                 autoComplete="off"
-                list=""
               />
             </div>
           </div>
@@ -120,7 +138,6 @@ function TraCuuPage() {
             Tra cứu
           </Button>
 
-          {/* Results */}
           {results !== null && (
             results.length === 0 ? (
               <p className="text-muted-foreground text-center py-8">Không tìm thấy kết quả phù hợp.</p>
@@ -137,11 +154,11 @@ function TraCuuPage() {
                   </TableHeader>
                   <TableBody>
                     {results.map((account) => (
-                      <TableRow key={account.id}>
-                        <TableCell className="font-mono">{account.id}</TableCell>
-                        <TableCell>{SAVINGS_TYPE_LABELS[account.savingsType]}</TableCell>
-                        <TableCell>{account.customerName}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(account.balance)}</TableCell>
+                      <TableRow key={account.MaSTK}>
+                        <TableCell className="font-mono">{account.MaSTK}</TableCell>
+                        <TableCell>{formatRegulationName(account)}</TableCell>
+                        <TableCell>{account.HoTen}</TableCell>
+                        <TableCell className="text-right">{formatCurrency(account.SoDu)}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -152,7 +169,7 @@ function TraCuuPage() {
         </div>
       </div>
 
-      <SubmitSpinner open={submitting} onDone={handleSpinnerDone} />
+      <SubmitSpinner open={submitting} onDone={() => void handleSpinnerDone()} />
     </div>
   );
 }

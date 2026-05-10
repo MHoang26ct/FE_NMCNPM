@@ -1,9 +1,15 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import { SubmitSpinner } from "@/components/SubmitSpinner";
 import { useAuth } from "@/lib/auth";
 import { AppHeader } from "@/components/AppHeader";
-import { createAccount, formatCurrency, type SavingsType, SAVINGS_TYPE_LABELS } from "@/lib/savings";
+import {
+  createAccount,
+  formatCurrency,
+  formatRegulationName,
+  getRegulations,
+  type SavingsRegulation,
+} from "@/lib/savings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,6 +37,13 @@ export const Route = createFileRoute("/mo-so")({
 });
 
 const NAV_NHANVIEN = [
+  {
+    label: "LẬP BÁO CÁO",
+    dropdown: [
+      { label: "Báo cáo đóng/mở sổ tháng", href: "/bao-cao-thang" },
+      { label: "Báo cáo doanh số hoạt động ngày", href: "/bao-cao-ngay" },
+    ],
+  },
   { label: "MỞ SỔ", href: "/mo-so" },
   {
     label: "LẬP PHIẾU",
@@ -44,15 +57,37 @@ const NAV_NHANVIEN = [
 
 function MoSoPage() {
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   const [customerName, setCustomerName] = useState("");
   const [address, setAddress] = useState("");
   const [cmnd, setCmnd] = useState("");
-  const [savingsType, setSavingsType] = useState<SavingsType | "">("");
+  const [maLTK, setMaLTK] = useState("");
   const [balance, setBalance] = useState("");
+  const [regulations, setRegulations] = useState<SavingsRegulation[]>([]);
+  const [loadingRegulations, setLoadingRegulations] = useState(true);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoadingRegulations(true);
+      try {
+        const data = await getRegulations();
+        setRegulations(data);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Không tải được danh sách kỳ hạn.";
+        toast.error(message);
+      } finally {
+        setLoadingRegulations(false);
+      }
+    };
+    void load();
+  }, []);
+
+  const selectedRegulation = useMemo(
+    () => regulations.find((r) => String(r.MaLTK) === maLTK) ?? null,
+    [regulations, maLTK]
+  );
 
   if (!user || user.role !== "nhanvien") {
     return (
@@ -65,7 +100,13 @@ function MoSoPage() {
     );
   }
 
-  const isValid = customerName.trim() && address.trim() && cmnd.trim() && savingsType && Number(balance) > 0;
+  const balanceNumber = Number(balance);
+  const isValid =
+    customerName.trim() &&
+    address.trim() &&
+    cmnd.trim() &&
+    selectedRegulation &&
+    balanceNumber >= selectedRegulation.SoTienGuiToiThieu;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,21 +119,30 @@ function MoSoPage() {
     setSubmitting(true);
   };
 
-  const handleSpinnerDone = () => {
-    setSubmitting(false);
-    const account = createAccount({
-      customerName: customerName.trim(),
-      address: address.trim(),
-      cmnd: cmnd.trim(),
-      savingsType: savingsType as SavingsType,
-      balance: Number(balance),
-    });
-    toast.success(`Mở sổ thành công! Mã sổ: ${account.id}`);
-    setCustomerName("");
-    setAddress("");
-    setCmnd("");
-    setSavingsType("");
-    setBalance("");
+  const handleSpinnerDone = async () => {
+    if (!selectedRegulation) return;
+
+    try {
+      const account = await createAccount({
+        customerName: customerName.trim(),
+        address: address.trim(),
+        cmnd: cmnd.trim(),
+        maLTK: selectedRegulation.MaLTK,
+        balance: balanceNumber,
+      });
+
+      toast.success(`Mở sổ thành công! Mã sổ: ${account.MaSTK}`);
+      setCustomerName("");
+      setAddress("");
+      setCmnd("");
+      setMaLTK("");
+      setBalance("");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Có lỗi xảy ra. Vui lòng thử lại.";
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const roleBadge = (
@@ -140,18 +190,23 @@ function MoSoPage() {
             </div>
             <div className="space-y-2">
               <Label>Loại tiết kiệm</Label>
-              <Select value={savingsType} onValueChange={(v) => setSavingsType(v as SavingsType)}>
+              <Select value={maLTK} onValueChange={setMaLTK} disabled={loadingRegulations}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Chọn loại tiết kiệm" />
+                  <SelectValue placeholder={loadingRegulations ? "Đang tải kỳ hạn..." : "Chọn loại tiết kiệm"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {(Object.keys(SAVINGS_TYPE_LABELS) as SavingsType[]).map((key) => (
-                    <SelectItem key={key} value={key}>
-                      {SAVINGS_TYPE_LABELS[key]}
+                  {regulations.map((regulation) => (
+                    <SelectItem key={regulation.MaLTK} value={String(regulation.MaLTK)}>
+                      {formatRegulationName(regulation)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {selectedRegulation && (
+                <p className="text-xs text-muted-foreground">
+                  Tối thiểu: {formatCurrency(selectedRegulation.SoTienGuiToiThieu)}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="balance">Số tiền gửi (VNĐ)</Label>
@@ -181,8 +236,8 @@ function MoSoPage() {
                 <p><strong>Khách hàng:</strong> {customerName}</p>
                 <p><strong>Địa chỉ:</strong> {address}</p>
                 <p><strong>CMND:</strong> {cmnd}</p>
-                <p><strong>Loại tiết kiệm:</strong> {savingsType ? SAVINGS_TYPE_LABELS[savingsType as SavingsType] : ""}</p>
-                <p><strong>Số tiền gửi:</strong> {formatCurrency(Number(balance) || 0)}</p>
+                <p><strong>Loại tiết kiệm:</strong> {selectedRegulation ? formatRegulationName(selectedRegulation) : ""}</p>
+                <p><strong>Số tiền gửi:</strong> {formatCurrency(balanceNumber || 0)}</p>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -193,7 +248,7 @@ function MoSoPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <SubmitSpinner open={submitting} onDone={handleSpinnerDone} />
+      <SubmitSpinner open={submitting} onDone={() => void handleSpinnerDone()} />
     </div>
   );
 }
