@@ -17,10 +17,10 @@ export function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
-    const ok = login(username, password);
+    const ok = await login(username, password);
     if (ok) {
       onOpenChange(false);
       setUsername("");

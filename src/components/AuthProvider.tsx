@@ -1,15 +1,17 @@
 import { useState, useEffect, useCallback, type ReactNode } from "react";
-import { AuthContext, attemptLogin, type User } from "@/lib/auth";
-
-const STORAGE_KEY = "cnpmbank_user";
+import { AuthContext, type User } from "@/lib/auth";
+import {
+  clearStoredSession,
+  loadStoredUser,
+  loginApi,
+  logoutApi,
+  meApi,
+  saveStoredSession,
+  toUserProfile,
+} from "@/lib/api";
 
 function loadUser(): User | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as User) : null;
-  } catch {
-    return null;
-  }
+  return loadStoredUser();
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -18,21 +20,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    setUser(loadUser());
-  }, []);
-
-  const login = useCallback((username: string, password: string) => {
-    const u = attemptLogin(username, password);
-    if (u) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
-      setUser(u);
-      return true;
+    const saved = loadUser();
+    if (saved) {
+      setUser(saved);
+    } else {
+      return;
     }
-    return false;
+
+    const restoreFromApi = async () => {
+      try {
+        const me = await meApi();
+        setUser(toUserProfile(me));
+      } catch {
+        clearStoredSession();
+        setUser(null);
+      }
+    };
+
+    void restoreFromApi();
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
+  const login = useCallback(async (username: string, password: string) => {
+    try {
+      const payload = await loginApi(username, password);
+      const profile = toUserProfile(payload.user);
+      saveStoredSession(payload.accessToken, profile);
+      setUser(profile);
+      return true;
+    } catch {
+      return false;
+    }
+  }, []);
+
+  const logout = useCallback(async () => {
+    try {
+      await logoutApi();
+    } catch {
+      // Best-effort API logout; local logout is still applied.
+    }
+    clearStoredSession();
     setUser(null);
   }, []);
 

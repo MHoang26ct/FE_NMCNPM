@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { UserPlus, UserRound, KeyRound, ShieldAlert } from "lucide-react";
 import { SubmitSpinner } from "@/components/SubmitSpinner";
+import { mapFeRoleToMaVaiTro, registerApi } from "@/lib/api";
 
 export const Route = createFileRoute("/tao-tai-khoan")({
   component: TaoTaiKhoanPage,
@@ -58,12 +59,23 @@ function TaoTaiKhoanPage() {
     setIsSubmitting(true);
   };
 
-  const handleDone = () => {
-    setIsSubmitting(false);
-    toast.success(`Tạo tài khoản ${role === "giamdoc" ? "Giám đốc" : "Nhân viên"} "${username}" thành công!`);
-    setUsername("");
-    setPassword("");
-    setRole("nhanvien");
+  const handleDone = async () => {
+    try {
+      await registerApi({
+        username: username.trim(),
+        password: password.trim(),
+        MaVaiTro: mapFeRoleToMaVaiTro(role),
+      });
+      toast.success(`Tạo tài khoản ${role === "giamdoc" ? "Giám đốc" : "Nhân viên"} "${username}" thành công!`);
+      setUsername("");
+      setPassword("");
+      setRole("nhanvien");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Tạo tài khoản thất bại.";
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -137,7 +149,7 @@ function TaoTaiKhoanPage() {
         </div>
       </div>
       
-      <SubmitSpinner open={isSubmitting} onDone={handleDone} />
+      <SubmitSpinner open={isSubmitting} onDone={() => void handleDone()} />
     </div>
   );
 }

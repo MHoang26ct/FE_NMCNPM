@@ -13,6 +13,13 @@ export const Route = createFileRoute("/")({
 });
 
 const NAV_NHANVIEN = [
+  {
+    label: "LẬP BÁO CÁO",
+    dropdown: [
+      { label: "Báo cáo đóng/mở sổ tháng", href: "/bao-cao-thang" },
+      { label: "Báo cáo doanh số hoạt động ngày", href: "/bao-cao-ngay" },
+    ],
+  },
   { label: "MỞ SỔ", href: "/mo-so" },
   {
     label: "LẬP PHIẾU",
@@ -25,13 +32,6 @@ const NAV_NHANVIEN = [
 ];
 
 const NAV_GIAMDOC = [
-  {
-    label: "LẬP BÁO CÁO",
-    dropdown: [
-      { label: "Báo cáo đóng/mở sổ tháng", href: "/bao-cao-thang" },
-      { label: "Báo cáo doanh số hoạt động ngày", href: "/bao-cao-ngay" },
-    ],
-  },
   { label: "THAY ĐỔI QUY ĐỊNH", href: "/thay-doi-quy-dinh" },
 ];
 
@@ -61,10 +61,10 @@ function Index() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    const ok = login(username, password);
+    const ok = await login(username, password);
     if (!ok) {
       setError("Tên đăng nhập hoặc mật khẩu không đúng");
     }

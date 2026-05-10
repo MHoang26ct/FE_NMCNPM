@@ -88,7 +88,7 @@ export function AppHeader({
   };
 
   const handleConfirmLogout = () => {
-    logout();
+    void logout();
     setLogoutConfirmOpen(false);
     navigate({ to: "/" });
   };
