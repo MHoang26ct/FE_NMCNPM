@@ -1,8 +1,9 @@
 import { useState, type ReactNode } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { LoginDialog } from "@/components/LoginDialog";
+import { SettingsDialog } from "@/components/SettingsDialog";
 import {
   Popover,
   PopoverContent,
@@ -79,6 +80,7 @@ export function AppHeader({
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [loginOpen, setLoginOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
 
@@ -113,6 +115,13 @@ export function AppHeader({
         </div>
         <div className="flex items-center gap-3 py-4">
           {roleBadge}
+          <button
+            onClick={() => setSettingsOpen(true)}
+            className="p-2 rounded-full hover:bg-accent transition-colors"
+            title="Cấu hình API Backend"
+          >
+            <Settings className="w-[30px] h-[30px] text-foreground" />
+          </button>
           {user ? (
             <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
               <PopoverTrigger asChild>
@@ -149,6 +158,8 @@ export function AppHeader({
       </header>
 
       <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} />
+
+      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
 
       <AlertDialog open={logoutConfirmOpen} onOpenChange={setLogoutConfirmOpen}>
         <AlertDialogContent>

@@ -1,5 +1,23 @@
-export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000/api";
+const getApiBaseUrl = (): string => {
+  if (typeof window !== "undefined") {
+    // Expose a helper to easily set/clear backend URL in console
+    (window as any).__setBackendUrl = (url?: string) => {
+      if (url) {
+        localStorage.setItem("API_BASE_URL", url);
+        console.log(`Đã cập nhật Base URL sang: ${url}. Đang tải lại trang...`);
+      } else {
+        localStorage.removeItem("API_BASE_URL");
+        console.log("Đã xóa Base URL tùy chỉnh, quay lại mặc định. Đang tải lại trang...");
+      }
+      window.location.reload();
+    };
+
+    return localStorage.getItem("API_BASE_URL") ?? import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000/api";
+  }
+  return import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000/api";
+};
+
+export const API_BASE_URL = getApiBaseUrl();
 
 const ACCESS_TOKEN_KEY = "cnpmbank_access_token";
 const USER_KEY = "cnpmbank_user";
