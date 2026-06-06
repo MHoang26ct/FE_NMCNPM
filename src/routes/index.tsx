@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
 
 import { LandingImageHolder } from "@/components/LandingImageHolder";
+import { SettingsDialog } from "@/components/SettingsDialog";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -59,6 +60,7 @@ function Index() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -141,9 +143,21 @@ function Index() {
                 </button>
               </div>
             </form>
+
+            <div className="px-8 pb-6 text-center border-t border-border/50 pt-4 bg-muted/5">
+              <button
+                type="button"
+                onClick={() => setSettingsOpen(true)}
+                className="text-xs text-muted-foreground hover:text-primary transition-colors underline cursor-pointer"
+              >
+                Cấu hình API URL (ngrok) để demo
+              </button>
+            </div>
           </div>
         </div>
       )}
+
+      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
   );
 }
