@@ -7,7 +7,7 @@ interface SubmitSpinnerProps {
 }
 
 /**
- * Shows a full-screen spinner overlay for 1 second, then calls onDone.
+ * Shows a full-screen spinner overlay for 0.5 seconds, then calls onDone.
  * Mount it while `open` is true; the parent should hide it after onDone fires.
  */
 export function SubmitSpinner({
@@ -26,7 +26,7 @@ export function SubmitSpinner({
     const timer = setTimeout(() => {
       setVisible(false);
       onDone();
-    }, 1000);
+    }, 500);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
